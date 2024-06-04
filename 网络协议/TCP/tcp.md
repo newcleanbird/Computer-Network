@@ -1,6 +1,6 @@
 # TCP(Transmission Control Protocol) -- 传输控制协议
 
-传输控制协议(Transmission Control Protocol，TCP)，是一种面向连接、确保数据在端到端间可靠传输的协议。
+传输控制协议(Transmission Control Protocol，TCP)，是**传输层**一种面向连接、确保数据在端到端间可靠传输的协议。
 
 ## 特点
 

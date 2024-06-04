@@ -1,6 +1,6 @@
 # UDP协议--用户数据报协议
 
-UDP(User Datagram Protocol):目标是在传输层提供直接发送报文(Datagram)的能力。
+UDP(User Datagram Protocol):目标是在**传输层**提供直接发送报文(Datagram)的能力。
 
 - Daragram是数据传输的最小单位。
 - UDP协议不会帮助拆分数据，它的目标只有一个，就是发送报文
