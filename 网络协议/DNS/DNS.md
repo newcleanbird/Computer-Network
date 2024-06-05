@@ -17,7 +17,9 @@ DNS使用UDP协议在端口53上进行大多数的查询和响应，尽管对于
 
 ### 什么是DNS？
 
-DNS（Domain Names System），域名系统，是互联网一项服务，是进行域名和与之相对应的 IP 地址进行转换的服务器
+DNS（Domain Name System） 是⼀种⽤于将域名（例如 `www.baidu.com`）转换为IP地址（例如 `220.181.111.188` ）的分布式系统。在互联⽹上，计算机和其他⽹络设备使⽤IP地址来相互识别和通信。然⽽，IP地址是⼀串数字，不太⽅便⼈们使⽤和记忆，所以就使⽤了域名来代替复杂的IP地址
+
+![DNS在OSI中的位置.png](./image/DNS在OSI中的位置.png)
 
 简单来讲，DNS相当于一个翻译官，负责将域名翻译成ip地址
 
@@ -28,9 +30,7 @@ DNS（Domain Names System），域名系统，是互联网一项服务，是进�
 
 DNS使用的是网络的查询，监听的是53号端口，通常DNS以UDP来查询，而当没有查询到完整的信息时，就会以TCP再次查询，所以启动DNS时，会同时启动TCP和UDP的53号端口。
 
-### DNS的结构
-
-域名结构是互联网命名系统的基础，它采用层次化的方式来组织和标识互联网上的每一个站点。域名结构的理解可以从两个角度出发：域名的分类和域名的层级结构。
+### 域名和域名服务
 
 #### 域名
 
@@ -40,13 +40,16 @@ DNS使用的是网络的查询，监听的是53号端口，通常DNS以UDP来查
 
 例如 `www.xxx.com，www`为三级域名、`xxx`为二级域名、`com`为顶级域名，系统为用户做了兼容，域名末尾的根域名.一般不需要输入。
 
-#### 域名的结构
+#### 域名的层级结构
 
+DNS 中的域名都是⽤句点来分隔的，⽐如 `www.server.com`，这⾥的句点代表了不同层次之间的界限。在域名中，越靠右的位置表示其层级越⾼。
+
+![域名的层级关系](./image/域名的层级关系.png)
 ![域名的层级结构](./image/域名的层级结构.png)
 
 1. 根域名：整个域名系统的起点，理论上是所有域名的最高级别。`.root` 或者 `.`，通常是省略的。
-
 2. 顶级域名（TLD, Top-Level Domain）：域名的最后部分，如 `.com`，`.cn` 等
+
    - 国家顶级域名（ccTLD, Country-code Top-Level Domain）：采用ISO3166的规定，这类域名用于代表具体的国家或地区，
      - 如 `.cn`(中国);`.uk`(英国);`.jp`(日本)等。
    - 通用顶级域名（gTLD, Generic Top-Level Domain）：这类域名不特指任何国家，而是面向全球使用。
@@ -54,7 +57,6 @@ DNS使用的是网络的查询，监听的是53号端口，通常DNS以UDP来查
    - 基础结构域名：这类域名用于互联网的基础架构，如.arpa，它主要用于反向DNS查找和某些特定的技术用途。
      - 基础结构顶级域只有一个arpa，是一个特殊的顶级域名（TLD），它是DNS（Domain Name System）基础设施的一部分，专门用于反向域名解析以及其他一些技术性的用途。被称为反向域名
 3. 次级域名（SLD, Second-Level Domain）：位于顶级域名前的部分，如 `baidu.com` 里的 `baidu`，这个是用户可以进行注册购买的。
-
 4. 主机域名：通常指的是在次级域名前的任何额外部分，可以包括多个层级的子域名，`baike.baidu.com` 里的 `baike`，这个是用户可分配的
 
 例如：
@@ -64,7 +66,7 @@ DNS使用的是网络的查询，监听的是53号端口，通常DNS以UDP来查
 mail.google.com.root
 ```
 
-- `.root`是根域名，也可以写作`.`，一般默认省略。
+- `.root`是根域名，也可以写作 `.`，一般默认省略。
 - `com`是顶级域名（gTLD）。
 - `google`是次级域名。
 - `mail`是子域名，也可以看作是主机域名的一部分。
@@ -139,7 +141,6 @@ Domain 的分层架构设计体现了高效简单可用，如下：
 - 若没有命中，则继续搜索操作系统的 DNS 缓存
 - 若仍然没有命中，则操作系统将域名发送至本地域名服务器，本地域名服务器采用递归查询自己的 DNS 缓存，查找成功则返回结果
 - 若本地域名服务器的 DNS 缓存没有命中，则本地域名服务器向上级域名服务器进行迭代查询
-
   - 首先本地域名服务器向根域名服务器发起请求，根域名服务器返回顶级域名服务器的地址给本地服务器
   - 本地域名服务器拿到这个顶级域名服务器的地址后，就向其发起请求，获取权限域名服务器的地址
   - 本地域名服务器根据权限域名服务器的地址向其发起请求，最终得到该域名对应的 IP 地址
@@ -224,6 +225,8 @@ Domain 的分层架构设计体现了高效简单可用，如下：
 2. 从"顶级域名服务器"查到"次级域名服务器"的NS记录和A记录（IP地址）
 3. 从"次级域名服务器"查出"主机名"的IP地址
 
+![DNS解析过程02](./image/DNS解析过程02.png)
+![DNS解析过程03](./image/DNS解析过程03.png)
 ![DNS解析过程](./image/DNS解析过程.png)
 
 ### 反向解析
@@ -381,9 +384,10 @@ DNS协议的层级在传输层之上，常见的是用UDP作为传输层，用�
 ![DNS协议字段](./image/DNS协议字段.png)
 
 1. 标识(identifier)
-   - 标识占16 位，标识用于DNS的请求和响应是不是一对。对于一对的请求和响应，标识字段是一样的。
 
+   - 标识占16 位，标识用于DNS的请求和响应是不是一对。对于一对的请求和响应，标识字段是一样的。
 2. 标志(flags)
+
    - 标志占 16 位，其包含8个标志字段，其含义分别如下
    - QR 查询应答标志，0表示这是查询报文，1表示这是应答报文。
    - opcode 查询应答类型，0表示标准查询，1表示反向查询，2表示请求服务器状态。
@@ -395,20 +399,20 @@ DNS协议的层级在传输层之上，常见的是用UDP作为传输层，用�
    - RA 位表示可递归 ( recursion available )，如果服务器支持递归查询，就会在应答中设置该位，以告知客户端。仅由应答报文使用。
    - zero 这三位未使用，固定为0。
    - rcode 表示返回码（reply code），用来返回应答状态，常用返回码：0表示无错误，2表示格式错误，3表示域名不存在。
-
 3. 问题数（question count ）
+
    - 占16位，表示后面问题节中的记录个数
-
 4. 应答资源记录数（answer count）
+
    - 占16 位，表示答案节中的记录个数
-
 5. 授权资源记录数（authority record count）
+
    - 占16 位，表示授权信息节中的记录个数
-
 6. 额外资源记录数（additional record count）
-   - 占16 位，表示额外信息节中的记录个数
 
+   - 占16 位，表示额外信息节中的记录个数
 7. 查询问题
+
    - 询问题部分由多个（question count）问题构成，每个问题的格式都相同，分为3个段：
      1. 查询名，以example.com为例，将被编码为7example3com0这13个字节。数字7表示后面example的长度，最后0则表示后面没跟任何字符，相当于一个结束符。单个字节最长可表示255大小，因此每一级域名的最大长度也是255。
      2. 查询类型（type）
@@ -468,3 +472,567 @@ DNS查询和响应报文通过UDP或TCP协议在网络上传输，UDP通常用�
 
 - DNS服务器的配置需要精确且经常更新，以反映域名和IP地址的变化。
 - 管理员负责确保DNS记录的正确性和安全性，监控DNS服务器的健康状态和性能。
+
+## 经典面试问题
+
+### 对于DNS服务器若采⽤集中式的设计有以下问题
+
+1. 单点故障
+   如果 DNS 服务器崩溃，那么整个⽹络随之瘫痪。通信容量(traaffic volume) ，单个 DNS 服务器不得不处理所有的
+   DNS 查询，这种查询级别可能是上百万上千万级，⼀台服务器很难满⾜;
+2. 远距离集中式数据库
+   单个 DNS 服务器不可能 邻近 所有的⽤户，假设在美国的 DNS 服务器不可能临近让澳⼤利亚的查询使⽤，其中查
+   询请求势必会经过低速和拥堵的链路，造成严重的时延;
+3. 维护
+   维护成本巨⼤，⽽且还需要频繁更新。
+
+### 根域名服务器为什么只有13个?
+
+主要的原因：
+与一个不分片的UDP报文的大小有关系。
+
+> 最初的DNS域名查询默认使用UDP协议，而使用UDP传输的DNS查询响应（Query Response）报文，不希望任何形式的分片,包括DNS应用层的分片V、以及IP层的分片。。换句话说，要求使用唯一的UDP报文传输DNS响应。
+> 绝大多数的网络接口类型支持IP报文≥576 字节无需分片自由通行，考虑到以上诸因素，IETF决定将DNS报文体限制在512字节。每一个根域名服务器占用32字节，其中包括根域名的名称、IP地址、TTL(Time To Live)等参数。
+> 所以：早期的DNS 查询结果是一个512字节的UDP 数据包。
+
+一个512字节的UDP 数据包，**一个根域名服务器占用32个字节(因为，IP地址由32位二进制数组成)， 13根域名服务器一共占用416字节。**
+
+剩余的96字节用于包装DNS报文头以及其它协议参数。
+
+所以，从空间上来说，一个512字节的dns数据包，最多可以容纳13个服务器的地址，没有多余的空间容纳第14个根域名服务器的32字节。
+
+因此就规定全世界有13个根域名服务器，编号从a.root-servers.net一直到m.root-servers.net。
+
+这13台根域名服务器由12个组织独立运营。其中，Verisign 公司管理两台根域名服务器：A 和 J。每家公司为了保证根域名服务器的可用性，会部署多个节点，比如单单Verisign 一家公司就部署了104台根域名服务器（2016年1月数据）。所以，根域名服务器其实不止13台。
+
+**这13个根域名服务器并不等于13台物理服务器**!
+
+容易被大众误解的是，这13个根域名服务器并不等于13台物理服务器，而是代表着13个全球IP地址，由12个机构来管理，其中美国最大电信运营商Verizon管理两个根域名全球IP地址。
+
+截至到今天为止，全球一共有**996台服务器实例（Instances）**，遍布5大洲4大洋。
+
+![13个根域名服务器位置](./image/13个根域名服务器位置.png)
+
+既然根域名服务器只有13个全球IP，而物理服务器却有996台，到底怎么分配的？
+
+答案是： 使用**BGP泛播技术（Anycast）**
+
+以Verizon管理的“198.41.0.4”为例，在全球一共分布在28个站点，每个站点的服务器，都使用同一个IP—— “198.41.0.4”， 反过来说， “198.41.0.4” 是一个全球IP， 在全球被 28 服务器使用。
+
+> 问题是：IP地址在互联网上重复使用，会不会有什么问题？
+
+咱们学习网络知识的时候，特别在局域网配置的时候，着重强调IP地址要唯一，不允许有重复使用IP地址的情况发生。但是，在互联网上不同站点可以使用相同的IP地址，只要使用方是IP地址的合法使用者。
+
+> “198.41.0.4”就会在28个站点，通过BGP路由协议，28次扩散到Internet路由表。
+
+#### 全球IP的路由策略
+
+全球的主机究竟挑选哪个“198.41.0.4”来使用呢？当然是距离自己最近的，用BGP的专业术语表达就是最优路径。
+
+#### 泛播技术有哪些优点？
+
+根域名服务器特别重要，曾经有黑客集中攻击它，差一点就成功了，因为13个服务器中某些依然没有被打趴下，源于服务器的全球式分布。
+
+一朝被蛇咬，十年怕草绳。 互联网管理机构发现对付DDoS 攻击最有效的方法，就是分布式部署根域名服务器。于是，使用了泛播技术，全球有了996台实例。
+
+如果有一天996台不够用，可以添加任意多台服务器，因为全球IP可以重复使用。
+
+### DNS劫持
+
+先回顾一下DNS劫持的概念？
+
+DNS劫持即通过某种技术手段，篡改正确域名和IP地址的映射关系，使得域名映射到了错误的IP地址，因此可以认为DNS劫持是一种DNS重定向攻击。DNS劫持通常可被用作域名欺诈，如在用户访问网页时显示额外的信息来赚取收入等；也可被用作网络钓鱼，如显示用户访问的虚假网站版本并非法窃取用户的个人信息。
+
+#### DNS劫持 是如何产生的呢？
+
+下面大概说几种DNS劫持方法：
+
+1. 本机DNS劫持
+
+   攻击者通过某些手段使用户的计算机感染上木马病毒，或者恶意软件之后，恶意修改本地DNS配置，比如修改本地hosts文件，缓存等
+2. 路由DNS劫持
+
+   很多用户默认路由器的默认密码，攻击者可以侵入到路由管理员账号中，修改路由器的默认配置
+3. 攻击DNS服务器
+
+   直接攻击DNS服务器，例如对DNS服务器进行DDOS攻击，可以是DNS服务器宕机，出现异常请求，还可以利用某些手段感染dns服务器的缓存，使给用户返回来的是恶意的ip地址
+
+#### DNS劫持大事记
+
+##### 事件1：《AWS route53 BGP路由泄漏事件》
+
+- 事件危害：据不完全统计，DNS劫持导致两个小时内有多个用户的以太坊钱包被转账清空，共计至少13000美元的资产被黑客盗取。
+- 事件还原： 事件发生在2018年4月24日。黑客针对四段分配给AWS，本应作为AWS route53 DNS服务器服务地址的IP空间(205.251.192.0/23, 205.251.194.0/23, 205.251.196.0/23, 205.251.198.0/23)发布了虚假的BGP路由，导致在BGP泄漏的两个小时期间，本应该AWS route53 DNS服务器的DNS查询都被重定向到了黑客的恶意DNS服务器。且黑客DNS劫持的目标十分明确，恶意DNS服务器只响应对myetherwallet.com的查询，其他域名的查询均返回SERVFAIL。一旦用户没有注意“网站不安全”的提示而访问myetherwallet.com登录自己的以太坊钱包，黑客就可以轻易获取用户的私钥进而窃取用户的数字货币资产。正常情况的DNS，和劫持后的DNS的情况，请参考如下攻击示意图（来自[cloudflare博客](https://yq.aliyun.com/go/articleRenderRedirect?url=https%3A%2F%2Fblog.cloudflare.com%2Fbgp-leaks-and-crypto-currencies%2F)）：
+
+正常情况：
+![正常情况的DNS](./image/正常情况的DNS.png)
+
+BGP泄漏后：
+![BGP泄漏后](./image/BGP泄漏后.png)
+
+##### 事件2：《巴西银行钓鱼事件》
+
+- 事件危害：黑客诱导原本想访问正常银行网站的受害者访问到钓鱼网站，并恶意窃取受害者的银行账目密码信息。
+- 事件还原：事件发生在2018年。黑客利用D-Link路由器的漏洞，入侵了至少500个家用路由器。黑客入侵后更改受害者路由器上的DNS配置，将受害者的DNS请求重定向到黑客自己搭建的恶意DNS服务器上。黑客入侵后更改受害者路由器上的DNS配置，将受害者的DNS请求重定向到黑客自己搭建的恶意DNS服务器上，最终诱导原本想访问正常银行网站的受害者访问到钓鱼网站，并恶意窃取受害者的银行账目密码信息。
+
+![巴西银行钓鱼事件](./image/巴西银行钓鱼事件.png)
+
+上面两个案例都是触目惊心啊。接下来我们来介绍一下黑客们是怎么做到DNS劫持的？
+
+#### DNS劫持分类
+
+我们按照客户端侧--递归DNS服务器--权威DNS服务器的路径，将DNS劫持做如下分类：
+
+##### 本地DNS劫持
+
+客户端侧发生的DNS劫持统称为本地DNS劫持。本地DNS劫持可能是：
+
+1. 黑客通过木马病毒或者恶意程序入侵PC，篡改DNS配置(hosts文件，DNS服务器地址，DNS缓存等)。
+2. 黑客利用路由器漏洞或者破击路由器管理账号入侵路由器并且篡改DNS配置。
+3. 一些企业代理设备（如Cisco Umbrella intelligent proxy）针对企业内部场景对一些特定的域名做DNS劫持解析为指定的结果。
+
+##### DNS解析路径劫持
+
+DNS解析过程中发生在客户端和DNS服务器网络通信时的DNS劫持统一归类为DNS解析路径劫持。通过对DNS解析报文在查询阶段的劫持路径进行划分，又可以将DNS解析路径劫持划分为如下三类：
+
+###### DNS请求转发
+
+通过技术手段(中间盒子，软件等)将DNS流量重定向到其他DNS服务器。
+案例：
+![巫俊峰, 沈瀚. 基于旁路抢答机制的异网DNS管控实践. 电信技术[J]](./image/巫俊峰,%20沈瀚.%20基于旁路抢答机制的异网DNS管控实践.%20电信技术[J].png)
+
+###### DNS请求复制
+
+利用分光等设备将DNS查询复制到网络设备，并先于正常应答返回DNS劫持的结果。
+案例：一个DNS查询抓包返回两个不同的应答。
+
+![一个DNS查询抓包返回两个不同的应答](./image/一个DNS查询抓包返回两个不同的应答.png)
+
+###### DNS请求代答
+
+网络设备或者软件直接代替DNS服务器对DNS查询进行应答。
+案例：一些DNS服务器实现了SERVFAIL重写和NXDOMAIN重写的功能。
+
+![DNS请求代答](./image/DNS请求代答.png)
+
+##### 篡改DNS权威记录
+
+篡改DNS权威记录 我们这里指的黑客非法入侵DNS权威记录管理账号，直接修改DNS记录的行为。
+案例：
+黑客黑入域名的管理账户，篡改DNS权威记录指向自己的恶意服务器以实现DNS劫持。
+![篡改DNS权威记录](./image/篡改DNS权威记录01.png)
+
+黑客黑入域名的上级注册局管理账户，篡改域名的NS授权记录，将域名授权给黑客自己搭建的恶意DNS服务器以实现DNS劫持。
+![篡改DNS权威记录](./image/篡改DNS权威记录02.png)
+
+黑客黑入域名的上级注册局管理账户，篡改域名的NS授权记录，将域名授权给黑客自己搭建的恶意DNS服务器以实现DNS劫持。（以上参考[fireeye博客](https://yq.aliyun.com/go/articleRenderRedirect?url=https%3A%2F%2Fwww.fireeye.com%2Fblog%2Fthreat-research%2F2019%2F01%2Fglobal-dns-hijacking-campaign-dns-record-manipulation-at-scale.html)）
+
+##### DNS劫持应对策略
+
+DNS劫持在互联网中似乎已经变成了家常便饭，那么该如何应对各种层出不穷的DNS劫持呢？如果怀疑自己遇到了DNS劫持，首先要做的事情就是要确认问题。
+
+##### 如何确认DNS劫持
+
+查看路由器DNS配置是否被篡改。
+可以使用一些全网拨测的工具确认DNS劫持和其影响范围。在此隆重介绍一下，阿里的DNS域名检测工具于国庆后已经正式上线，地址是：[阿里云网站运维检测平台](https://zijian.aliyun.com/#/domainDetect)
+
+![阿里云网站运维检测平台](./image/阿里云网站运维检测平台.png)
+
+通过工具查看回复DNS应答的DNS服务器，确认DNS解析是否被重定向。
+• [whatismydnsresolver](http://whatismydnsresolver.com/)
+移动端可以安装一些DNS相关的测试工具进行排查：
+• 安卓 ping & dns
+• IOS IOS iNetTools
+
+##### DNS劫持防范
+
+• 安装杀毒软件，防御木马病毒和恶意软件；定期修改路由器管理账号密码和更新固件。
+• 选择安全技术实力过硬的域名注册商，并且给自己的域名权威数据上锁，防止域名权威数据被篡改。
+• 选择支持DNSSEC的域名解析服务商，并且给自己的域名实施DNSSEC。DNSSEC能够保证递归DNS服务器和权威DNS服务器之间的通信不被篡改。阿里云DNS作为一家专业的DNS解析服务厂商，一直在不断完善打磨产品功能，DNSSEC功能已经在开发中，不日就会上线发布。
+• 在客户端和递归DNS服务器通信的最后一英里使用DNS加密技术，如DNS-over-TLS，DNS-over-HTTPS等。
+在此《DNS攻击防范科普系列》已经完结，欢迎大家给我们留意反馈自己对DNS攻击防范对看法。
+
+##### DNS 劫持 与 HTTP 劫持
+
+通过上面的讲解，我们都知道了，DNS 完成了一次域名到 IP 的映射查询，当你在访问 `www.baidu.com` 时，能正确返回给你 百度首页的 ip。
+
+但如果此时 DNS 解析出现了一些问题，当你想要访问 `www.baidu.com` 时，却返回给你 `www.google.com` 的 `ip`，这就是我们常说的 `DNS` 劫持。
+
+与之容易混淆的有 `HTTP` 劫持。
+
+那什么是 `HTTP` 劫持呢？
+
+你一定见过当你在访问 某个网站时，右下角也突然弹出了一个扎眼的广告弹窗。这就是 `HTTP` 劫持。
+
+借助别人文章里的例子，它们俩的区别就好比是
+
+DNS劫持是你想去机场的时候，把你给丢到火车站。
+HTTP劫持是你去机场途中，有人给你塞小广告。
+
+### HttpDNS
+
+传统DNS存在哪些问题？
+
+1）域名缓存问题：导游记忆记错了
+2）域名转发问题：A运营商偷懒转给B运营商
+3）出口NAT问题：NAT转换后DNS误判运营商
+4）域名更新问题：DNS的域名TTL有效期跟不上场景切换
+5）解析延迟问题：递归查询时间长
+
+#### 例子： 用户侧DNS被劫持，hosts被篡改
+
+如下是我们的域名在用户机器上被篡改的实例，通过修改hosts文件，可以看到下面的域名被篡改成了 `127.0.0.1`。
+
+![用户侧DNS被劫持，hosts被篡改](./image/用户侧DNS被劫持，hosts被篡改.png)
+
+#### 例子2. 缓存DNS服务器污染，返回客户端错误IP
+
+2014年1月21日下午3点，国内顶级域的根服务器出现异常，许多知名网站的域名均被劫持到一个错误的IP地址上，至少有2/3的国内网站受到影响，用户无法正常访问。
+
+根服务器恢复后，由于DNS缓存问题，部分地区用户“断网”现象仍持续了几个小时。
+
+#### 例子3. DNS缓存时间较长，短则10分钟，长则几小时
+
+DNS的解析机制为了提升效率，在很多地方会有缓存，例如本机的缓存，DNS服务器上的缓存。缓存带来了效率上的提升，但同时却给故障处理带来了不小的麻烦，即：当我们将故障的机器下线或者将DNS指向的主机地址修改以后，用户并不能立刻感知新的主机地址，在缓存有效期内还是会继续访问旧的主机。
+
+#### HTTPDNS工作模式
+
+定义：不走传统的DNS解析，而是自己搭建基于HTTP协议的DNS服务器集群，分布在多个地点和多个运营商，当客户端需要DNS解析的时候，直接通过HTTP协议进行请求这个服务器集群，获得就近的地址。
+
+1. 在客户端的SDK里动态请求服务端，获取HTTPDNS服务器的ip列表，缓存到本地。SDK也会在本地缓存DNS域名解析的结果。这个缓存和本地DNS的缓存不一样，不是整个运营商统一做的，而是手机应用来做的，如何更新，何时更新。
+2. 如果本地无，就需要请求HTTPDNS的服务器，在本地的ip列表中，选择一个发出HTTP请求，返回一个要访问的网站的ip列表。手机客户端知道手机坐在的运营商，可以精确做到全局负载均衡。
+
+#### HTTPDNS的缓存设计
+
+解析的过程不需要本地DNS服务递归调用一大圈，一个HTTP请求直接搞定，本地也有缓存，过期时间，更新时间都可以自己控制。
+缓存设计模式三层：客户端，缓存，数据源
+
+- 对于应用架构，就是应用，缓存，数据库。tomcat，redis，mysql
+- 对于HTTPDNS来说，就是手机客户端，dns缓存，httpdns服务器
+  例如dns缓存在内存中，也可以持久化到存储上，app重启后，就可以尽快的从存储中加载上次积累的解析结果。
+  sdk中的缓存会严格按照缓存过期时间，如果没有命中，或已经过期，则不允许使用过期记录，会发起一次解析，保障记录是新的。
+  解析可以是同步或异步的。
+  同步更新的优点是实时性好，缺点是如果有多个请求都发现过期的时候，会同时请求HTTPDNS，浪费资源。对应到应用架构中缓存的Cache-Aside机制，先读缓存，不命中读数据库，同时写入到缓存。
+  异步的优点是多个请求都过期的情况可以合并为一个，同时可以在即将过期的时候，创建一个任务进行预加载，防止过期之后再刷新成为预加载。缺点是当请求拿到过期数据，如果可以请求就没问题，如果不能请求，则失败，等下次缓存更新后，再请求方能成功。
+  对应于应用架构中缓存的Refresh-Ahead机制，即业务仅仅访问缓存，当过期就定期刷新。
+
+#### HTTPDNS调度设计
+
+客户端嵌入了SDK，在客户端HTTPDNS服务端可以根据手机的国家，省市地点，运营商，选择最佳的服务节点。
+
+小结：
+
+- 传统的DNS有解析慢，更新不及时，转发跨运营商，nat跨运营商等问题，影响了流量的调度。
+- HTTPDNS通过客户端sdk和服务端，直接解析dns，绕过了传统dns缺点，实现智能调度。
+
+#### 功能说明
+
+HTTPDNS使用HTTP协议进行域名解析，代替现有基于UDP的DNS协议，域名解析请求直接发送到阿里云的HTTPDNS服务器，从而绕过运营商的Local DNS，能够避免Local DNS造成的域名劫持问题和调度不精准问题。
+
+| 功能           | 说明                                                                       |
+| -------------- | -------------------------------------------------------------------------- |
+| 防劫持         | 绕过运营商Local DNS，避免域名劫持，让每一次访问都畅通无阻。                |
+| 精准调度       | 基于访问的来源IP，获得最精准的解析结果，让客户端就近接入业务节点。         |
+| 0ms解析延迟    | 通过热点域名预解析、缓存DNS解析结果、解析结果懒更新策略等方式实现0解析延迟 |
+| 快速生效       | 避免Local DNS不遵循权威TTL，解析结果长时间无法更新的问题                   |
+| 降低解析失败率 | 有效降低无线场景下解析失败的比率                                           |
+
+- 防劫持
+  HTTPDNS代替了传统的LocalDNS完成递归解析的功能，基于HTTP协议的设计可以适用于几乎所有的网络环境，同时保留了鉴权、HTTPS等更高安全性的扩展能力，避免恶意攻击劫持行为。
+- 精准调度
+  传统域名解析的调度精准性问题，本质根源在于Local DNS的部署和分配机制上。由于碎片化的管理方式，这些环节的服务质量同样很难得到保障。HTTPDNS在递归解析实现上优化了与权威DNS的交互，通过edns-client-subnet协议将终端用户的IP信息直接交付给权威DNS，这样权威DNS就可以忽略Local DNS IP信息，根据终端用户的IP信息进行精准调度，避免Local DNS的坐标干扰
+- DNS解析0延迟：
+
+  - 构建客户端DNS缓存；
+    - 通过合理的DNS缓存，我们确保每次网络交互的DNS解析都是从内存中获取IP信息，从而大幅降低DNS解析开销。根据业务的不同，我们可以制订更丰富的缓存策略，如根据运营商缓存，可以在网络切换的场景下复用已缓存的不同运营商线路的域名IP信息，避免网络切换后进行链路重选择引入的DNS网络解析开销。另外，我们还可以引入IP本地化离线存储，在客户端重启时快速从本地读取域名IP信息，大幅提升首页载入效率。
+  - 热点域名预解析；
+    - 在客户端启动过程中，我们可以通过热点域名的预解析完成热点域名的缓存载入。当真正的业务请求发生时，直接由内存中读取目标域名的IP信息，避免传统DNS的网络开销。
+  - 懒更新策略；
+    - 绝大多数场景下业务域名的IP信息变更并不频繁，特别是在单次APP的使用周期内，域名解析获取的IP往往是相同的（特殊业务场景除外）。因此我们可以利用DNS懒更新策略来实现TTL过期后的DNS快速解析。所谓DNS懒更新策略即客户端不主动探测域名对应IP的TTL时间，当业务请求需要访问某个业务域名时，查询内存缓存并返回该业务域名对应的IP解析结果。如果IP解析结果的TTL已过期，则在后台进行异步DNS网络解析与缓存结果更新。通过上述策略，用户的所有DNS解析都在与内存交互，避免了网络交互引入的延迟。
+
+#### 实现方案
+
+**服务端**:
+服务端提供API接口,app端直接通过ip地址访问,ip地址可以有多个
+
+请求方式：HTTP GET
+
+URL参数说明：
+
+| 名称 | 是否必须 | 描述                                                     |
+| ---- | -------- | :------------------------------------------------------- |
+| host | 必须     | 要解析的域名                                             |
+| ip   | 可选     | 用户的来源IP，如果没指定这个参数，默认使用请求连接的源IP |
+
+请求示例：
+
+- 示例1（默认来源IP）：[http://x.x.x.x/d?host=www.suning.com](http://x.x.x.x/d?host=www.suning.com)
+- 示例2（指定来源IP）：[http://x.x.x.x/d?host=www.suning.com&amp;ip=185.53.179.6](http://x.x.x.x/d?host=www.suning.com&ip=185.53.179.6)
+
+考虑到服务IP防攻击之类的安全风险，为保障服务可用性，HTTPDNS同时提供多个服务IP，当某个服务IP在异常情况下不可用时，可以使用其它服务IP进行重试。
+
+请求成功时，HTTP响应的状态码为200，响应结果用JSON格式表示，示例如下：
+
+```json
+{
+  "host": "www.suning.com",
+  "ips": [
+    "112.84.104.48"
+  ],
+  "ttl": 57,
+  "origin_ttl": 120
+}
+```
+
+请求失败的响应示例：
+
+```json
+{
+  "code": "MissingArgument"
+}
+```
+
+错误码列表如下：
+
+| 错误码           | HTTP状态码 | 描述             |
+| ---------------- | ---------- | ---------------- |
+| MissingArgument  | 400        | 缺少必要参数     |
+| InvalidHost      | 400        | 域名格式不合法   |
+| MethodNotAllowed | 405        | 不支持的HTTP方法 |
+| InternalError    | 500        | 服务端内部错误   |
+
+错误处理：
+异常下的出错兼容逻辑,主要包括异步请求,重试,降级
+
+- 异步请求
+  - 访问HTTPDNS服务时，应该使用异步请求的策略，避免解析延迟太大而对业务造成影响，特别是在网络环境异常或HTTPDNS服务IP异常不可用时，如果用同步访问，需要等待网络超时后才会返回解析失败，这个超时时间较大，可能对业务的使用体验造成很大影响。
+  - 异步请求策略：解析域名时，如果当前缓存中有TTL未过期的IP，可直接使用；如果没有，则立刻让此次请求降级走原生LocalDNS解析，同
+  时另起线程异步地发起HTTPDNS请求进行解析，更新缓存，这样后续解析域名时就能命中缓存。
+
+- 重试
+  - 访问HTTPDNS服务解析域名时，如果请求HTTPDNS服务端失败，即HTTP请求没有返回，可以进行重试。
+  - 大部分情况下，这种访问失败是由于网络原因引起的，重试可以解决。
+
+- 降级
+  - 不管是因为什么原因，当通过HTTPDNS服务无法获得域名对应的IP时，都必须降级：使用标准的DNS解析，通过Local DNS去解析域名。
+
+**Android端**:
+OkHttp默认使用系统DNS服务InetAddress进行域名解析，但同时也暴露了自定义DNS服务的接口，通过该接口我们可以优雅地使用HttpDns。
+
+- 自定义DNS接口
+
+OkHttp暴露了一个Dns接口，通过实现该接口，我们可以自定义Dns服务：
+
+```java
+public class OkHttpDns implements Dns {
+    private static final Dns SYSTEM = Dns.SYSTEM;
+    HttpDnsService httpdns;//httpdns 解析服务
+    private static OkHttpDns instance = null;
+    private OkHttpDns(Context context) {
+        this.httpdns = HttpDns.getService(context, "account id");
+    }
+    public static OkHttpDns getInstance(Context context) {
+        if(instance == null) {
+            instance = new OkHttpDns(context);
+        }
+        return instance;
+    }
+    @Override
+    public List<InetAddress> lookup(String hostname) throws UnknownHostException {
+        //通过异步解析接口获取ip
+        String ip = httpdns.getIpByHostAsync(hostname);
+        if(ip != null) {
+            //如果ip不为null，直接使用该ip进行网络请求
+            List<InetAddress> inetAddresses = Arrays.asList(InetAddress.getAllByName(ip));
+            Log.e("OkHttpDns", "inetAddresses:" + inetAddresses);
+            return inetAddresses;
+        }
+        //如果返回null，走系统DNS服务解析域名
+        return Dns.SYSTEM.lookup(hostname);
+    }
+}
+```
+
+- 创建OkHttpClient
+
+创建OkHttpClient对象，传入OkHttpDns对象代替默认Dns服务：
+
+```java
+private void okhttpDnsRequest() {
+    OkHttpClient client = new OkHttpClient.Builder()
+    .dns(OkHttpDns.getInstance(getApplicationContext()))
+    .build();
+    Request request = new Request.Builder()
+    .url("http://www.aliyun.com")
+    .build();
+    Response response = null;
+    client.newCall(request).enqueue(new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+            e.printStackTrace();
+        }
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+                DataInputStream dis = new DataInputStream(response.body().byteStream());
+                int len;
+                byte[] buff = new byte[4096];
+                StringBuilder result = new StringBuilder();
+                while ((len = dis.read(buff)) != -1) {
+                    result.append(new String(buff, 0, len));
+                }
+                Log.d("OkHttpDns", "Response: " + result.toString());
+            }
+        });
+}
+```
+
+- 总结
+
+相比于通用方案，OkHttp+HttpDns有以下两个主要优势：
+
+```cpp
+实现简单，只需通过实现Dns接口即可接入HttpDns服务
+ 
+通用性强，该方案在HTTPS,SNI以及设置Cookie等场景均适用。规避了证书校验，域名检查等环节
+```
+
+**IOS端**:
+基于NSURLProtocol可拦截iOS系统上基于上层网络库NSURLConnection/NSURLSession发出的网络请求；
+
+通过以下接口注册自定义NSURLProtocol，用于拦截上层网络请求，并创建新的网络请求接管数据发送、接收、重定向等处理逻辑，将结果反馈给原始请求。
+
+```java
+[NSURLProtocol registerClass:[CustomProtocol class]];
+```
+
+自定义NSURLProtocol处理过程概述：
+
+- 在canInitWithRequest中过滤要需要做HTTPDNS域名解析的请求；
+- 请求拦截后，做HTTPDNS域名解析；
+- 解析完成后，同普通请求一样，替换URL.host字段，替换HTTP Header Host域，并接管该请求的数据发送、接收、重定向等处理；
+
+#### 接入流程
+
+##### 服务开通
+
+HTTPDNS是移动研发平台提供的服务，请参考[EMAS 快速入门](https://help.aliyun.com/document_detail/169962.html)开通服务。
+
+##### Android SDK 接入
+
+1. 在项目根目录下的build.gradle文件中添加Maven仓库地址
+
+   ```java
+   allprojects {
+      repositories {
+         maven {
+               url 'http://maven.aliyun.com/nexus/content/repositories/releases/'
+         }
+      }
+   }
+   ```
+
+2. 在需要引入HTTPDNS服务的模块下的build.gradle中添加依赖
+
+   ```java
+   dependencies {
+      compile ('com.aliyun.ams:alicloud-android-httpdns:1.3.3@aar') {
+         transitive true
+      }
+   }
+   ```
+
+按照以上官方文档配置，在同步工程后，会报错
+
+```shell
+Could not find com.aliyun.ams:alicloud-android-utdid:1.1.5.4.
+Searched in the following locations:
+  - http://maven.aliyun.com/nexus/content/repositories/releases/com/aliyun/ams/alicloud-android-utdid/1.1.5.4/alicloud-android-utdid-1.1.5.4.pom
+  - https://dl.google.com/dl/android/maven2/com/aliyun/ams/alicloud-android-utdid/1.1.5.4/alicloud-android-utdid-1.1.5.4.pom
+  - https://jcenter.bintray.com/com/aliyun/ams/alicloud-android-utdid/1.1.5.4/alicloud-android-utdid-1.1.5.4.pom
+Required by:
+    project :app > com.aliyun.ams:alicloud-android-httpdns:1.3.3 > com.aliyun.ams:alicloud-android-beacon:1.0.4.3
+```
+
+修改如下
+
+```java
+implementation('com.aliyun.ams:alicloud-android-httpdns:1.3.3@aar') {
+    transitive true
+    exclude group: 'com.aliyun.ams', module: 'alicloud-android-utdid'
+}
+implementation 'com.aliyun.ams:alicloud-android-utdid:1.1.5.3'
+```
+
+1. 引入Retrofit及gson
+
+   增加依赖
+
+   ```java
+   implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+   implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+   implementation 'com.google.code.gson:gson:2.8.6'
+   ```
+
+2. 配置DNS
+
+新建一个类，继承Dns
+
+   ```java
+   public class AliDns implements Dns {
+   
+      private HttpDnsService httpDns;
+   
+      public AliDns(Context context) {
+         //传入account_id，account_id为HTTPDNS控制台添加应用时生成的
+         httpDns = HttpDns.getService(context, "account_id");
+      }
+   
+      @Override
+      public List<InetAddress> lookup(String hostname) throws UnknownHostException {
+         //通过异步解析接口获取ip
+         String ip = httpDns.getIpByHostAsync(hostname);
+         //Android9.0系统及以后版本，https请求无法直接访问，方便起见，直接在AndroidManifest.xml中配置android:usesCleartextTraffic="true"
+         if (ip != null) {
+               //如果ip不为null，直接使用该ip进行网络请求
+               Log.e("AliDns", "ip:" + ip);
+               List<InetAddress> inetAddresses = Arrays.asList(InetAddress.getAllByName(ip));
+               return inetAddresses;
+         }
+         //如果返回null，走系统DNS服务解析域名
+         return Dns.SYSTEM.lookup(hostname);
+      }
+   }
+   ```
+
+   设置OkHttpClient的dns
+
+   ```java
+   OkHttpClient client = new OkHttpClient.Builder().dns(new AliDns(getApplicationContext())).build();
+   ```
+
+3. 调用请求
+
+```java
+Retrofit retrofit = new Retrofit.Builder().client(client).baseUrl("域名").addConverterFactory(GsonConverterFactory.create()).build();
+Api api = retrofit.create(Api.class);
+Call<Bean> call = api.getBanner();
+call.enqueue(new Callback<Bean>() {
+    @Override
+    public void onResponse(Call<Bean> call, Response<Bean> response) {
+        if (!response.isSuccessful()) {
+            tv.setText("请求失败，错误码:" + response.code());
+            return;
+    	}
+        Bean bean = response.body();
+        tv.setText(bean.toString());
+    }
+ 
+    @Override
+    public void onFailure(Call<Bean> call, Throwable t) {
+    	tv.setText(t.getMessage());
+    }
+});
+```
+
+[源码](https://github.com/milovetingting/Samples)
